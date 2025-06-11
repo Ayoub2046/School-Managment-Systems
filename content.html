@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Management | Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <style>
+        /* Internal CSS for the Admin Panel */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        :root {
+            /* Light Mode */
+            --sidebar-bg: #1a2853; --sidebar-text: #b0b8d3; --sidebar-text-active: #ffffff;
+            --sidebar-active-bg: rgba(255, 255, 255, 0.08); --sidebar-active-border: #367BF5;
+            --topbar-bg: #ffffff; --main-bg: #f4f7fc; --card-bg: #ffffff;
+            --text-primary: #1a2853; --text-secondary: #5a5c69; --border-color: #e3e6f0;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+        }
+        body.dark-mode {
+            /* Dark Mode */
+            --sidebar-bg: #1f2937; --topbar-bg: #111827; --main-bg: #0f172a; --card-bg: #1f2937;
+            --text-primary: #e5e7eb; --text-secondary: #d1d5db; --border-color: #374151;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+        }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--main-bg); }
+        .dashboard-wrapper { display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); position: fixed; left: 0; top: 0; height: 100%; z-index: 1000; transition: all 0.3s ease; }
+        .sidebar-header { padding: 22px 25px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-header h3 { color: white; font-size: 1.5rem; }
+        .sidebar-nav { list-style: none; padding: 15px 0; }
+        .sidebar-nav li a { display: flex; align-items: center; color: var(--sidebar-text); padding: 12px 25px; text-decoration: none; transition: all 0.2s; }
+        .sidebar-nav li a:hover, .sidebar-nav li a.active { background-color: var(--sidebar-active-bg); color: var(--sidebar-text-active); border-left: 4px solid var(--sidebar-active-border); padding-left: 21px; }
+        .main-content { flex-grow: 1; margin-left: 260px; transition: all 0.3s ease; }
+        .top-navbar { background-color: var(--topbar-bg); color: var(--text-primary); padding: 15px 30px; box-shadow: 0 1px 5px var(--shadow-color); display: flex; justify-content: space-between; align-items: center; }
+        #sidebar-toggler { display: none; }
+        .content-area { padding: 30px; }
+        .content-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+        .content-card .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .content-card .card-header h5 {
+            color: #367BF5;
+            font-weight: 600;
+        }
+        .form-section-divider {
+            margin: 2rem 0;
+            border-top: 1px solid var(--border-color);
+        }
+        @media (max-width: 992px) {
+            .sidebar { left: -260px; } .sidebar.toggled { left: 0; }
+            .main-content { margin-left: 0; } #sidebar-toggler { display: block; }
+        }
+        .dark-mode .form-control, .dark-mode .form-select { background-color: #1f2937; border-color: var(--border-color); color: var(--text-primary); }
+    </style>
+</head>
+<body>
+<div class="dashboard-wrapper">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header"><h3><i class="fas fa-school"></i> <span>Admin Panel</span></h3></div>
+        <ul class="sidebar-nav">
+            <!-- Your other admin links go here -->
+            <li><a href="admin.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+            <li><a href="content.html" class="active"><i class="fas fa-edit"></i> <span>Content Management</span></a></li>
+            <!-- ... -->
+            <li><a href="#" id="logout-link"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+        </ul>
+    </nav>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Navbar -->
+        <nav class="top-navbar">
+            <button class="btn btn-primary" id="sidebar-toggler" type="button"><i class="fas fa-bars"></i></button>
+            <h4 class="mb-0 ms-3">Content Management</h4>
+        </nav>
+        <!-- Content Area -->
+        <div class="content-area">
+            <div id="save-alert" class="position-fixed top-0 end-0 p-3" style="z-index: 1056;"></div>
+            <div class="card content-card">
+                <div class="card-header"><h5 class="mb-0">Edit Homepage Content</h5></div>
+                <div class="card-body p-4">
+                    <form id="content-form">
+                        <h6 class="text-primary fw-bold">HERO SECTION</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3"><label class="form-label">Main Title</label><input type="text" id="hero-title" class="form-control"></div>
+                            <div class="col-md-6 mb-3"><label class="form-label">Subtitle</label><input type="text" id="hero-subtitle" class="form-control"></div>
+                        </div>
+                        <div class="mb-3"><label class="form-label">Background Image URL</label><input type="text" id="hero-bg" class="form-control" placeholder="https://example.com/image.jpg"></div>
+                        <hr class="form-section-divider">
+                        <h6 class="text-primary fw-bold">"WHY CHOOSE US?" SECTION</h6>
+                        <div class="row">
+                            <div class="col-md-4 mb-3"><label class="form-label">Feature 1 Title</label><input type="text" id="feature1-title" class="form-control mb-2"><label class="form-label">Feature 1 Text</label><textarea id="feature1-text" class="form-control" rows="3"></textarea></div>
+                            <div class="col-md-4 mb-3"><label class="form-label">Feature 2 Title</label><input type="text" id="feature2-title" class="form-control mb-2"><label class="form-label">Feature 2 Text</label><textarea id="feature2-text" class="form-control" rows="3"></textarea></div>
+                            <div class="col-md-4 mb-3"><label class="form-label">Feature 3 Title</label><input type="text" id="feature3-title" class="form-control mb-2"><label class="form-label">Feature 3 Text</label><textarea id="feature3-text" class="form-control" rows="3"></textarea></div>
+                        </div>
+                        <hr class="form-section-divider">
+                        <button type="submit" class="btn btn-primary px-4"><i class="fas fa-save me-2"></i>Save All Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Auth Guard
+    if (sessionStorage.getItem('isAdminLoggedIn') !== 'true') { window.location.href = 'login.html'; }
+    // Logout Link
+    document.getElementById('logout-link').addEventListener('click', (e) => { e.preventDefault(); sessionStorage.removeItem('isAdminLoggedIn'); window.location.href = 'login.html'; });
+    // Sidebar Toggle
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarToggler = document.getElementById('sidebar-toggler');
+    if(sidebarToggler) sidebarToggler.addEventListener('click', () => sidebar.classList.toggle('toggled'));
+
+    // Content Management Specific JS
+    const contentForm = document.getElementById('content-form');
+    const formFields = {
+        heroTitle: document.getElementById('hero-title'),
+        heroSubtitle: document.getElementById('hero-subtitle'),
+        heroBg: document.getElementById('hero-bg'),
+        feature1Title: document.getElementById('feature1-title'),
+        feature1Text: document.getElementById('feature1-text'),
+        feature2Title: document.getElementById('feature2-title'),
+        feature2Text: document.getElementById('feature2-text'),
+        feature3Title: document.getElementById('feature3-title'),
+        feature3Text: document.getElementById('feature3-text'),
+    };
+    
+    function loadContent() {
+        const savedContent = JSON.parse(localStorage.getItem('homepageContent'));
+        if (savedContent) {
+            for (const key in formFields) {
+                if (savedContent[key]) formFields[key].value = savedContent[key];
+            }
+        }
+    }
+
+    contentForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const newContent = {};
+        for (const key in formFields) { newContent[key] = formFields[key].value; }
+        localStorage.setItem('homepageContent', JSON.stringify(newContent));
+        
+        const alertDiv = document.getElementById('save-alert');
+        alertDiv.innerHTML = `<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>Success!</strong> Homepage content saved.<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>`;
+        setTimeout(() => {
+            const alert = bootstrap.Alert.getOrCreateInstance(alertDiv.querySelector('.alert'));
+            if(alert) alert.close();
+        }, 4000);
+    });
+
+    loadContent();
+});
+</script>
+</body>
+</html>
